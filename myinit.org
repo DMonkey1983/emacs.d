@@ -108,4 +108,6 @@
       :ensure t
       :init
       (add-hook 'python-mode-hook 'jedi:setup))
+
   #+END_SRC
+
