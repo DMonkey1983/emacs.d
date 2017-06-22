@@ -94,3 +94,18 @@
 
 #+END_SRC
 
+* Flycheck
+  #+BEGIN_SRC emacs-lisp
+    (use-package flycheck
+      :ensure t
+      :init
+      (global-flycheck-mode t))
+  #+END_SRC
+
+* Jedi
+  #+BEGIN_SRC emacs-lisp
+    (use-package jedi
+      :ensure t
+      :init
+      (add-hook 'python-mode-hook 'jedi:setup))
+  #+END_SRC
