@@ -125,3 +125,13 @@
       :init
       (global-undo-tree-mode t))
   #+END_SRC
+* Misc packages
+  #+BEGIN_SRC emacs-lisp
+    (global-hl-line-mode t)
+
+    (use-package beacon
+      :ensure t
+      :config
+      (beacon-mode 1))
+
+  #+END_SRC
