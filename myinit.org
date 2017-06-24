@@ -1,4 +1,4 @@
-#+ STARTIP: overview
+#+STARTUP: overview
 
 * interface tweaks
 #+BEGIN_SRC emacs-lisp
@@ -57,60 +57,83 @@
 * ido and stuff
   Convenience for using emacs
 #+BEGIN_SRC emacs-lisp
-(setq indo-enable-flex-matching t)
-(setq ido-everywhere t)
-(ido-mode 1)
+  (setq indo-enable-flex-matching t)
+  (setq ido-everywhere t)
+  (ido-mode 1)
 
-(defalias 'list-buffers 'ibuffer-other-window)
+  (defalias 'list-buffers 'ibuffer-other-window)
+  (global-set-key (kbd "C-x C-b") 'ibuffer-other-window)
+  (setq ibuffer-saved-filter-groups
+        (quote (("default"
+                 ("dired" (mode . dired-mode))
+                 ("org" (name . "^.*org$"))
 
-(use-package ace-window
-  :ensure t
-  :init
-  (progn
-    (global-set-key [remap other-window] 'ace-window)
-    ))
+                 ("web" (or (mode . web-mode) (mode . js2-mode)))
+                 ("shell" (or(mode . eshell-mode) (mode . shell-mode)))
+                 ("mu4e" (name . "\*mu4e\*"))
+                 ("programming" (or
+                                 (mode . python-mode)
+                                 (mode . c++-mode)))
+                 ("emacs" (or
+                           (name . "^\\*scratch\\*$")
+                           (name . "^\\*Messages\\*$")))
+                 ))))
+  (add-hook 'ibuffer-mode-hook
+            (lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "default")))
 
-(use-package counsel
-  :ensure t
-  )
+  (setq ibuffer-show-empty-filter-groups nil)
+  (setq ibuffer-expert t)
 
-(use-package ivy
-  :ensure t
-  :diminish (ivy-mode)
-  :bind(("C-x b" . ivy-switch-buffer))
-  :config
-  (ivy-mode 1)
-  (setq ivy-use-virtual-buffers t)
-  (setq ivy-display-style 'fancy))
+  (use-package ace-window
+    :ensure t
+    :init
+    (progn
+      (global-set-key [remap other-window] 'ace-window)
+      ))
 
-(use-package swiper
-  :ensure t
-  :bind (("C-s" . swiper)
-	 ("C-r" . swiper)
-	 ("C-c C-r" . ivy-resume)
-	 ("M-x" . counsel-M-x)
-	 ("C-x C-f" . counsel-find-file))
-  :config
-  (progn
+  (use-package counsel
+    :ensure t
+    )
+
+  (use-package ivy
+    :ensure t
+    :diminish (ivy-mode)
+    :bind(("C-x b" . ivy-switch-buffer))
+    :config
     (ivy-mode 1)
     (setq ivy-use-virtual-buffers t)
-    (setq ivy-display-style 'fancy)
-    (setq enable-recursive-minibuffers t)
-    (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
-    ))
+    (setq ivy-display-style 'fancy))
 
-(use-package company
-  :ensure t
-  :defer t
-  :init (global-company-mode)
-  :config
-  (progn
-    (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+  (use-package swiper
+    :ensure t
+    :bind (("C-s" . swiper)
+           ("C-r" . swiper)
+           ("C-c C-r" . ivy-resume)
+           ("M-x" . counsel-M-x)
+           ("C-x C-f" . counsel-find-file))
+    :config
+    (progn
+      (ivy-mode 1)
+      (setq ivy-use-virtual-buffers t)
+      (setq ivy-display-style 'fancy)
+      (setq enable-recursive-minibuffers t)
+      (define-key read-expression-map (kbd "C-r") 'counsel-expression-history)
+      ))
 
-    (setq company-tooltip-align-annotations t
-	  company-show-numbers t)
-    (setq company-dabbrev-downcase nil))
-  :diminish company-mode)
+  (use-package company
+    :ensure t
+    :defer t
+    :init (global-company-mode)
+    :config
+    (progn
+      (bind-key [remap completion-at-point] #'company-complete company-mode-map)
+
+      (setq company-tooltip-align-annotations t
+            company-show-numbers t)
+      (setq company-dabbrev-downcase nil))
+    :diminish company-mode)
 
 #+END_SRC
 
@@ -166,6 +189,13 @@
 
     (use-package iedit
       :ensure t)
+
+    (use-package smartparens
+      :ensure t
+      :config
+      (smartparens-global-mode t)
+      (show-smartparens-global-mode t))
+    (add-hook 'markdown-mode-hook 'turn-on-smartparens-mode)
   #+END_SRC
 
 * Web Package
@@ -182,3 +212,54 @@
 	    '(("django"   . "\\.html\\'")))
       (setq web-mode-enable-auto-closing t))
   #+END_SRC
+* Latex
+ #+BEGIN_SRC emacs-lisp
+   (use-package tex
+     :ensure auctex)
+ #+END_SRC
+* C++ development packages
+ #+BEGIN_SRC emacs-lisp
+   (use-package ggtags
+     :ensure t
+     :config
+     (add-hook 'c-mode-common-hoook
+               (lambda ()
+                 (when (derived-mode-p 'c-mode 'c++-mode)
+                   (ggtags-mode 1))))
+     )
+ #+END_SRC
+
+* Projectile and Dumb-jump
+#+BEGIN_SRC emacs-lisp
+  (use-package projectile
+    :ensure t
+    :config
+    (projectile-global-mode)
+  (setq projectile-completion-system 'ivy))
+
+  (use-package counsel-projectile
+    :ensure t
+    :config
+    (counsel-projectile-on))
+
+  (use-package dumb-jump
+    :bind (("M-g o" . dumb-jump-go-other-window)
+           ("M-g j" . dumb-jump-go)
+           ("M-g x" . dumb-jump-go-prefered-external)
+           ("M-g z" . dumb-jump-go-external-other-window))
+    :config (setq dumb-jump-selector 'ivy)
+    :init
+    (dumb-jump-mode)
+    :ensure)
+#+END_SRC
+
+* Emmet mode
+#+BEGIN_SRC emacs-lisp
+  (use-package emmet-mode
+    :ensure t
+    :config
+    (add-hook 'sqml-mode-hook 'emmet-mode)
+    (add-hook 'web-mode-hook 'emmet-mode)
+    (add-hook 'css-mode-hook 'emmet-mode)
+  )
+#+END_SRC
