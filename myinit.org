@@ -17,11 +17,41 @@
   Org-mode stuff
 
 #+BEGIN_SRC emacs-lisp
-(use-package org-bullets
-  :ensure t
-  :config
-  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
+  (use-package org-bullets
+    :ensure t
+    :config
+    (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1))))
 
+  (custom-set-variables
+   '(org-directory "~/Documents/orgfiles")
+   '(org-default-notes-file (concat org-directory "/notes.org"))
+   '(org-export-html-postamble nil)
+   '(org-hide-leading-stars t)
+   '(org-startup-folded (quote overview))
+   '(org-startup-indented t)
+   )
+
+  (global-set-key "\C-ca" 'org-agenda)
+
+  (global-set-key (kbd "C-c c") 'org-capture)
+
+  (setq org-agenda-files (list "~/Documents/orgfiles/gcal.org"
+			       "~/Documents/orgfiles/i.org"
+			       "~/Documents/orgfiles/shedule.org"))
+  (setq org-capture-templates
+	'(("a" "Appointment" entry (file+headline "~/Documents/orgfiles/gcal.org" "Appointments")
+	   "* TODO %?\n:PROPERTIES:\n\n:END\nDEADLINE: %^T \n %i\n")
+	  ("n" "Note" entry (file+headline "~/Documents/orgfiles/notes.org" "Notes")
+	   "* Note %?\n%T")
+	  ("l" "Link" entry (file+headline "~/Documents/orgfiles/Links.org" "Links")
+	   "* %? ?^L %^g \n%T" :prepend t)
+	  ("n" "Blog idea" entry (file+headline "~/Documents/orgfiles/i.org" "Blog Topics")
+	   "* %?\n%T" :prepend t)
+	  ("n" "To Do Items" entry (file+headline "~/Documents/orgfiles/i.org" "To Do Items")
+	   "* %?\n%T" :prepend t)
+
+	  ("j" "Journal" entry (file+datetree "~/Documents/orgfiles/journal.org")
+	   "*%?\nEntered on %U\n %i\n %a")))
 #+END_SRC
 
 * ido and stuff
@@ -134,4 +164,21 @@
       :config
       (beacon-mode 1))
 
+    (use-package iedit
+      :ensure t)
+  #+END_SRC
+
+* Web Package
+  #+BEGIN_SRC emacs-lisp
+    (use-package web-mode
+      :ensure t
+      :config
+      (add-to-list 'auto-mode-alist '("\\.html?\\'" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.html\\.erb\\'" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.mustache\\'" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.jinja\\'" . web-mode))
+      (add-to-list 'auto-mode-alist '("\\.php\\'" . web-mode))
+      (setq web-mode-engines-alist
+	    '(("django"   . "\\.html\\'")))
+      (setq web-mode-enable-auto-closing t))
   #+END_SRC
