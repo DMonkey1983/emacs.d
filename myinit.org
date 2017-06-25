@@ -212,6 +212,11 @@
 
     (use-package ag
       :ensure t)
+
+    (global-set-key (kbd "M-;") 'evilnc-comment-or-uncomment-lines)
+    (global-set-key (kbd "C-c l") 'evilnc-quick-comment-or-uncomment-to-the-line)
+    (global-set-key (kbd "C-c c") 'evilnc-copy-and-comment-lines)
+    (global-set-key (kbd "C-c p") 'evilnc-comment-or-uncomment-paragraphs)
   #+END_SRC
 
 * Web Package
@@ -341,6 +346,15 @@
              "T" 'eshell
              "w" 'save-buffer
              "x" 'smex
+             "li" 'evilnc-comment-or-uncomment-lines
+             "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
+             "ll" 'evilnc-quick-comment-or-uncomment-to-the-line
+             "lc" 'evilnc-copy-and-comment-lines
+             "lp" 'evilnc-comment-or-uncomment-paragraphs
+             "lr" 'comment-or-uncomment-region
+             "lv" 'evilnc-toggle-invert-comment-line-by-line
+             "."  'evilnc-copy-and-comment-operator
+             "\\" 'evilnc-comment-operator ; if you prefer backslash key
              )))
 
        ;; boot evil by default
@@ -351,8 +365,6 @@
        (define-key evil-ex-map "e " 'ido-find-file)
        (define-key evil-ex-map "b " 'ido-switch-buffer)
 
-       ;; jj escapes to normal mode
-       (define-key evil-insert-state-map (kbd "j") 'bw-evil-escape-if-next-char-is-j)
        (setq
         ;; h/l wrap around to next lines
         evil-cross-lines t)
@@ -368,7 +380,8 @@
 
        ;; modes to map to different default states
        (evil-set-initial-state 'calendar-mode 'emacs)
-       (evil-set-initial-state 'org-mode 'emacs)))
+       (evil-set-initial-state 'org-mode 'emacs)
+       (evil-set-initial-state 'elfeed-search 'emacs)))
 
 
  #+END_SRC
@@ -595,4 +608,10 @@
                 ("D" . bjm/elfeed-show-daily)
                 ("W" . bjm/elfeed-show-web)
                 ("q" . bjm/elfeed-save-db-and-bury)))
+#+END_SRC
+* Evil-nerd-commenter
+#+BEGIN_SRC emacs-lisp
+  (use-package evil-nerd-commenter
+    :ensure t
+    )
 #+END_SRC
